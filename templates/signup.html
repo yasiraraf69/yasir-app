@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="../static/signup.css">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>Create Account</h2>
+
+            <form action="/signup" method="POST">
+                <div class="input-group">
+                    <input type="text" name="email_phone" placeholder="Enter your Email or Phone" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Create a Password" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="re_password" placeholder="Re-enter your Password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="terms_agree" id="terms" required>
+                    <label for="terms">I agree to the Terms and Conditions</label>
+                </div>
+
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="/login">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

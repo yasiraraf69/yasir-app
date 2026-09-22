@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="auth-box">
+            <h2>Login</h2>
+
+            <form action="/login" method="POST">
+                <div class="input-group">
+                    <input type="text" name="email_phone" placeholder="Enter your Email or Phone" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Enter your Password" required>
+                </div>
+
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="/forgot_password">Forgot Password?</a>
+                <a href="/signup">Create new account</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

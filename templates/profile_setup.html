@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup</title>
+    <link rel="stylesheet" href="../static/profile_setup.css">
+</head>
+<body>
+
+    <div class="setup-wrapper">
+        <div class="setup-box">
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="step-label" id="stepLabel">Step 1 of 4</p>
+
+            <!-- FORM WRAPS ALL STEPS -->
+            <form method="POST" action="/profile_setup" enctype="multipart/form-data">
+
+                <!-- STEP 1: Profile Picture -->
+                <div class="step active" data-step="1">
+                    <h2>Add a Profile Picture</h2>
+                    <p class="step-desc">Choose a photo to personalize your profile</p>
+                    <div class="input-group">
+                        <input type="file" name="profile_pic" accept="image/*">
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn-secondary" onclick="skipStep()">Skip</button>
+                        <button type="button" class="btn-primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Name (REQUIRED) -->
+                <div class="step" data-step="2">
+                    <h2>What's your name?</h2>
+                    <p class="step-desc">This will appear on your profile <span class="required-tag">Required</span></p>
+                    <div class="input-group">
+                        <input type="text" name="name" id="nameInput" placeholder="Enter your full name">
+                    </div>
+                    <p class="error-msg" id="nameError">Please enter your name to continue.</p>
+                    <div class="btn-row">
+                        <button type="button" class="btn-primary full-width" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Bio -->
+                <div class="step" data-step="3">
+                    <h2>Tell us about yourself</h2>
+                    <p class="step-desc">Write a short bio</p>
+                    <div class="input-group">
+                        <textarea name="bio" placeholder="Write something about you..." rows="4"></textarea>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn-secondary" onclick="skipStep()">Skip</button>
+                        <button type="button" class="btn-primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Finish -->
+                <div class="step" data-step="4">
+                    <h2>All set! 🎉</h2>
+                    <p class="step-desc">Your profile is ready</p>
+                    <div class="btn-row">
+                        <button type="submit" class="btn-primary full-width">Save Profile</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function updateUI() {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            document.getElementById('progressFill').style.width = ((currentStep / totalSteps) * 100) + '%';
+            document.getElementById('stepLabel').textContent = `Step ${currentStep} of ${totalSteps}`;
+        }
+
+        function nextStep() {
+            if (currentStep === 2) {
+                const nameInput = document.getElementById('nameInput');
+                const errorMsg = document.getElementById('nameError');
+                if (nameInput.value.trim() === '') {
+                    errorMsg.style.display = 'block';
+                    nameInput.focus();
+                    return;
+                } else {
+                    errorMsg.style.display = 'none';
+                }
+            }
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateUI();
+            }
+        }
+
+        function skipStep() {
+            nextStep();
+        }
+
+        updateUI();
+    </script>
+
+</body>
+</html>

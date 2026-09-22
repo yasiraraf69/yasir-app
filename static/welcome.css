@@ -1,0 +1,133 @@
+/* ============================================
+   Welcome Page — UI v2.1 (fixed navbar)
+   ============================================ */
+
+   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+   * {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
+   
+   body {
+       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background-color: #f0f2f5;
+       color: #1f2937;
+       min-height: 100vh;
+       display: flex;
+       flex-direction: column;
+   }
+   
+   /* ---------- Navbar ---------- */
+   .navbar {
+       display: flex;
+       justify-content: space-between;   /* logo LEFT, links RIGHT */
+       align-items: center;
+       padding: 20px 40px;
+       background-color: transparent;
+   }
+   
+   /* ---------- Logo (left side) ---------- */
+   .nav-logo {
+       font-size: 20px;
+       font-weight: 700;
+       color: #22c55e;
+       letter-spacing: -0.3px;
+       cursor: default;
+   }
+   
+   /* ---------- Nav Links (right side) ---------- */
+   .nav-links {
+       display: flex;
+       align-items: center;
+       gap: 12px;
+   }
+   
+   .nav-links a {
+       /* Fixed size — both buttons identical */
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       min-width: 90px;              /* same width */
+       height: 40px;                 /* same height */
+       padding: 0 20px;
+       font-family: 'Poppins', sans-serif;
+       font-size: 14px;
+       font-weight: 500;
+       color: #1f2937;
+       background-color: #ffffff;
+       border: 1.5px solid #e5e7eb;
+       border-radius: 10px;
+       text-decoration: none;
+       transition: all 0.2s ease;
+   }
+   
+   .nav-links a:hover {
+       border-color: #22c55e;
+       color: #22c55e;
+       transform: translateY(-1px);
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+   }
+   
+   /* ---------- Welcome Container ---------- */
+   .welcome-container {
+       flex: 1;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       text-align: center;
+       padding: 0 20px 80px;
+   }
+   
+   .welcome-container h1 {
+       font-size: 56px;
+       font-weight: 700;
+       color: #1f2937;
+       letter-spacing: -1px;
+       line-height: 1.15;
+       margin-bottom: 18px;
+       animation: fadeIn 0.5s ease;
+   }
+   
+   .welcome-container p {
+       font-size: 16px;
+       font-weight: 400;
+       color: #6b7280;
+       max-width: 500px;
+       line-height: 1.6;
+       animation: fadeIn 0.7s ease;
+   }
+   
+   /* ---------- Animation ---------- */
+   @keyframes fadeIn {
+       from { opacity: 0; transform: translateY(12px); }
+       to   { opacity: 1; transform: translateY(0); }
+   }
+   
+   /* ---------- Responsive ---------- */
+   @media (max-width: 640px) {
+       .navbar {
+           padding: 16px 20px;
+       }
+   
+       .nav-logo {
+           font-size: 17px;
+       }
+   
+       .nav-links a {
+           min-width: 75px;
+           height: 36px;
+           padding: 0 14px;
+           font-size: 13px;
+       }
+   
+       .welcome-container h1 {
+           font-size: 36px;
+       }
+   
+       .welcome-container p {
+           font-size: 14.5px;
+       }
+   }

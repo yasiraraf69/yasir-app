@@ -1,0 +1,516 @@
+/* ============================================
+   Profile View — Complete Styles
+   (Profile card + Topbar + Menu + Modals + Prompt)
+   ============================================ */
+
+   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+   * {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
+   
+   body {
+       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background-color: #f0f2f5;
+       color: #1f2937;
+       min-height: 100vh;
+       padding: 20px;
+   }
+   
+   /* ============================================
+      1. TOPBAR + HAMBURGER MENU
+      ============================================ */
+   .topbar {
+       position: fixed;
+       top: 0;
+       left: 0;
+       right: 0;
+       height: 60px;
+       background: #ffffff;
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       padding: 0 24px;
+       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+       z-index: 50;
+   }
+   
+   .topbar-title {
+       font-size: 17px;
+       font-weight: 600;
+       color: #1f2937;
+       letter-spacing: -0.2px;
+   }
+   
+   /* ---------- Hamburger Button ---------- */
+   .menu-btn {
+       width: 42px;
+       height: 42px;
+       background: #f3f4f6;
+       border: none;
+       border-radius: 50%;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       gap: 4px;
+       cursor: pointer;
+       transition: all 0.2s ease;
+   }
+   
+   .menu-btn:hover {
+       background: #e5e7eb;
+   }
+   
+   .menu-btn span {
+       display: block;
+       width: 18px;
+       height: 2px;
+       background: #1f2937;
+       border-radius: 2px;
+       transition: all 0.2s ease;
+   }
+   
+   /* ---------- Dropdown Menu ---------- */
+   .dropdown-menu {
+       position: absolute;
+       top: 70px;
+       right: 24px;
+       background: #ffffff;
+       border-radius: 12px;
+       box-shadow:
+           0 10px 30px rgba(0, 0, 0, 0.12),
+           0 2px 8px rgba(0, 0, 0, 0.06);
+       min-width: 200px;
+       padding: 8px;
+       opacity: 0;
+       transform: translateY(-8px) scale(0.97);
+       pointer-events: none;
+       transition: all 0.2s ease;
+       z-index: 60;
+   }
+   
+   .dropdown-menu.open {
+       opacity: 1;
+       transform: translateY(0) scale(1);
+       pointer-events: auto;
+   }
+   
+   .menu-item {
+       display: flex;
+       align-items: center;
+       gap: 12px;
+       padding: 11px 14px;
+       font-size: 14px;
+       font-weight: 500;
+       color: #1f2937;
+       text-decoration: none;
+       border-radius: 8px;
+       transition: all 0.15s ease;
+   }
+   
+   .menu-item:hover {
+       background: #f3f4f6;
+   }
+   
+   .menu-item:last-child:hover {
+       background: #fef2f2;
+       color: #dc2626;
+   }
+   
+   .menu-icon {
+       font-size: 15px;
+   }
+   
+   /* ============================================
+      2. PROFILE CARD (centered)
+      ============================================ */
+   .profile-wrapper {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       min-height: 90vh;
+       padding: 80px 20px 20px;
+   }
+   
+   .profile-card {
+       background: #ffffff;
+       width: 100%;
+       max-width: 420px;
+       padding: 48px 36px;
+       border-radius: 16px;
+       box-shadow:
+           0 10px 30px rgba(0, 0, 0, 0.08),
+           0 2px 8px rgba(0, 0, 0, 0.04);
+       text-align: center;
+       z-index: 1;
+       animation: fadeIn 0.4s ease;
+   }
+   
+   /* ---------- Profile Picture Circle ---------- */
+   .profile-pic {
+       width: 140px;
+       height: 140px;
+       border-radius: 50%;
+       border: 2px dashed #cbd5e1;
+       background-color: #f9fafb;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       margin: 0 auto 24px;
+       font-size: 48px;
+       color: #9ca3af;
+       font-weight: 300;
+       transition: all 0.25s ease;
+       overflow: hidden;
+       padding: 0;
+   }
+   
+   .profile-pic:hover {
+       border-color: #22c55e;
+       color: #22c55e;
+       background-color: #f0fdf4;
+       cursor: pointer;
+   }
+   
+   .profile-pic img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 50%;
+       display: block;
+   }
+   
+   /* ---------- Name ---------- */
+   .profile-name {
+       font-size: 24px;
+       font-weight: 600;
+       color: #1f2937;
+       margin-bottom: 8px;
+       letter-spacing: -0.3px;
+   }
+   
+   /* ---------- Bio ---------- */
+   .profile-bio {
+       font-size: 14px;
+       color: #6b7280;
+       font-style: italic;
+       line-height: 1.6;
+   }
+   
+   /* ============================================
+      3. FLOATING PROMPT BOX (bottom-right)
+      ============================================ */
+   .prompt-box {
+       position: fixed;
+       bottom: 24px;
+       right: 24px;
+       width: 300px;
+       background: #ffffff;
+       padding: 20px 22px;
+       border-radius: 14px;
+       box-shadow:
+           0 12px 32px rgba(0, 0, 0, 0.12),
+           0 4px 12px rgba(0, 0, 0, 0.06);
+       z-index: 100;
+       animation: slideUp 0.4s ease;
+   }
+   
+   .prompt-content {
+       display: none;
+   }
+   
+   .prompt-content.active {
+       display: block;
+   }
+   
+   .prompt-content h3 {
+       font-size: 16px;
+       font-weight: 600;
+       color: #1f2937;
+       margin-bottom: 4px;
+   }
+   
+   .prompt-desc {
+       font-size: 13px;
+       color: #6b7280;
+       margin-bottom: 14px;
+   }
+   
+   .prompt-box .btn-row {
+       display: flex;
+       gap: 8px;
+   }
+   
+   .prompt-box .btn-primary,
+   .prompt-box .btn-secondary {
+       flex: 1;
+       padding: 9px 12px;
+       font-family: 'Poppins', sans-serif;
+       font-size: 13px;
+       font-weight: 600;
+       border: none;
+       border-radius: 8px;
+       cursor: pointer;
+       transition: all 0.2s ease;
+   }
+   
+   .prompt-box .btn-primary {
+       background: #22c55e;
+       color: #ffffff;
+   }
+   
+   .prompt-box .btn-primary:hover {
+       background: #16a34a;
+       transform: translateY(-1px);
+       box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+   }
+   
+   .prompt-box .btn-secondary {
+       background: #f3f4f6;
+       color: #4b5563;
+   }
+   
+   .prompt-box .btn-secondary:hover {
+       background: #e5e7eb;
+       color: #1f2937;
+   }
+   
+   /* ============================================
+      4. MODALS (Settings + Logout + Delete)
+      ============================================ */
+   .modal-overlay {
+       position: fixed;
+       inset: 0;
+       background: rgba(0, 0, 0, 0.5);
+       backdrop-filter: blur(2px);
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       opacity: 0;
+       pointer-events: none;
+       transition: opacity 0.25s ease;
+       z-index: 200;
+       padding: 20px;
+   }
+   
+   .modal-overlay.open {
+       opacity: 1;
+       pointer-events: auto;
+   }
+   
+   .modal-card {
+       background: #ffffff;
+       width: 100%;
+       max-width: 360px;
+       padding: 32px 28px 24px;
+       border-radius: 16px;
+       text-align: center;
+       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+       transform: scale(0.92);
+       transition: transform 0.25s ease;
+   }
+   
+   .modal-overlay.open .modal-card {
+       transform: scale(1);
+   }
+   
+   .modal-icon {
+       font-size: 36px;
+       margin-bottom: 12px;
+   }
+   
+   .modal-title {
+       font-size: 20px;
+       font-weight: 600;
+       color: #1f2937;
+       margin-bottom: 8px;
+   }
+   
+   .modal-text {
+       font-size: 14px;
+       color: #6b7280;
+       margin-bottom: 22px;
+       line-height: 1.5;
+   }
+   
+   /* ---------- Modal Buttons ---------- */
+   .modal-actions {
+       display: flex;
+       gap: 10px;
+       margin-top: 8px;
+   }
+   
+   .btn-cancel,
+   .btn-danger {
+       flex: 1;
+       padding: 11px 16px;
+       font-family: 'Poppins', sans-serif;
+       font-size: 14px;
+       font-weight: 600;
+       border: none;
+       border-radius: 10px;
+       cursor: pointer;
+       transition: all 0.2s ease;
+   }
+   
+   .btn-cancel {
+       background: #f3f4f6;
+       color: #4b5563;
+   }
+   
+   .btn-cancel:hover {
+       background: #e5e7eb;
+       color: #1f2937;
+   }
+   
+   .btn-danger {
+       background: #ef4444;
+       color: #ffffff;
+   }
+   
+   .btn-danger:hover:not(:disabled) {
+       background: #dc2626;
+       transform: translateY(-1px);
+       box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+   }
+   
+   .btn-danger:disabled {
+       background: #fca5a5;
+       cursor: not-allowed;
+       opacity: 0.6;
+   }
+   
+   /* ============================================
+      5. SETTINGS OPTION
+      ============================================ */
+   .settings-options {
+       margin-bottom: 18px;
+   }
+   
+   .settings-option {
+       width: 100%;
+       display: flex;
+       align-items: center;
+       gap: 14px;
+       padding: 14px 16px;
+       background: #f9fafb;
+       border: 1.5px solid #e5e7eb;
+       border-radius: 12px;
+       cursor: pointer;
+       text-align: left;
+       font-family: 'Poppins', sans-serif;
+       transition: all 0.2s ease;
+   }
+   
+   .settings-option:hover {
+       background: #fef2f2;
+       border-color: #fecaca;
+   }
+   
+   .settings-option .option-icon {
+       font-size: 22px;
+   }
+   
+   .option-text {
+       display: flex;
+       flex-direction: column;
+       gap: 2px;
+   }
+   
+   .option-text strong {
+       font-size: 14px;
+       font-weight: 600;
+       color: #1f2937;
+   }
+   
+   .option-text small {
+       font-size: 12px;
+       color: #6b7280;
+   }
+   
+   .settings-option:hover strong {
+       color: #dc2626;
+   }
+   
+   /* ============================================
+      6. DELETE CONFIRM CHECKBOX
+      ============================================ */
+   .confirm-check {
+       display: flex;
+       align-items: center;
+       gap: 10px;
+       padding: 12px 14px;
+       background: #fef2f2;
+       border: 1.5px solid #fecaca;
+       border-radius: 10px;
+       margin-bottom: 20px;
+       cursor: pointer;
+       text-align: left;
+   }
+   
+   .confirm-check input[type="checkbox"] {
+       width: 18px;
+       height: 18px;
+       accent-color: #dc2626;
+       cursor: pointer;
+       flex-shrink: 0;
+   }
+   
+   .confirm-check span {
+       font-size: 12.5px;
+       color: #7f1d1d;
+       font-weight: 500;
+       line-height: 1.4;
+       user-select: none;
+   }
+   
+   /* ============================================
+      7. ANIMATIONS
+      ============================================ */
+   @keyframes fadeIn {
+       from { opacity: 0; transform: translateY(8px); }
+       to   { opacity: 1; transform: translateY(0); }
+   }
+   
+   @keyframes slideUp {
+       from { opacity: 0; transform: translateY(20px); }
+       to   { opacity: 1; transform: translateY(0); }
+   }
+   
+   /* ============================================
+      8. RESPONSIVE
+      ============================================ */
+   @media (max-width: 520px) {
+       .dropdown-menu {
+           right: 16px;
+           min-width: 180px;
+       }
+   
+       .modal-card {
+           padding: 26px 22px 20px;
+       }
+   
+       .modal-title {
+           font-size: 18px;
+       }
+   
+       .profile-pic {
+           width: 110px;
+           height: 110px;
+           font-size: 40px;
+       }
+   
+       .profile-name {
+           font-size: 20px;
+       }
+   
+       .prompt-box {
+           left: 16px;
+           right: 16px;
+           bottom: 16px;
+           width: auto;
+       }
+   }

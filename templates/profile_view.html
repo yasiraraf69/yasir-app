@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="../static/profile_view.css">
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-title">My Profile</div>
+
+        <button class="menu-btn" id="menuBtn" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#" class="menu-item" onclick="openSettingsModal(); return false;">
+                <span class="menu-icon">⚙️</span>
+                Settings
+            </a>
+            <a href="#" class="menu-item" onclick="openLogoutModal(); return false;">
+                <span class="menu-icon">🚪</span>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-wrapper">
+        <div class="profile-card">
+
+            <div class="profile-pic">
+                {% if profile['profile_pic'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + profile['profile_pic']) }}" alt="Profile">
+                {% else %}
+                    <span>+</span>
+                {% endif %}
+            </div>
+
+            <h1 class="profile-name">{{ profile['name'] }}</h1>
+
+            <p class="profile-bio">
+                {{ profile['bio'] if profile['bio'] else 'No bio yet' }}
+            </p>
+
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- FLOATING PROMPT BOX (only if missing info)   -->
+    <!-- ============================================ -->
+    {% if not profile['profile_pic'] or not profile['bio'] %}
+    <div class="prompt-box" id="promptBox">
+
+        {% if not profile['profile_pic'] %}
+        <div class="prompt-content active" id="prompt1">
+            <h3>Add your profile pic</h3>
+            <p class="prompt-desc">Complete your profile</p>
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="nextPrompt()">Skip</button>
+                <button class="btn-primary" onclick="goToSetup()">Add Now</button>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not profile['bio'] %}
+        <div class="prompt-content {% if profile['profile_pic'] %}active{% endif %}" id="prompt2">
+            <h3>Add your bio</h3>
+            <p class="prompt-desc">Tell people about yourself</p>
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="closePrompt()">Skip</button>
+                <button class="btn-primary" onclick="goToSetup()">Add Now</button>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <!-- MODAL 1: SETTINGS -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-card">
+            <h2 class="modal-title">Settings</h2>
+            <p class="modal-text">Manage your account</p>
+
+            <div class="settings-options">
+                <button class="settings-option danger" onclick="openDeleteModal()">
+                    <span class="option-icon">⚠️</span>
+                    <div class="option-text">
+                        <strong>Delete Account</strong>
+                        <small>This will remove all your data</small>
+                    </div>
+                </button>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeSettingsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: LOGOUT -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-card">
+            <div class="modal-icon">🚪</div>
+            <h2 class="modal-title">Log out?</h2>
+            <p class="modal-text">Are you sure you want to log out?</p>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+                <button class="btn-danger" onclick="confirmLogout()">Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DELETE ACCOUNT -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-card">
+            <div class="modal-icon">⚠️</div>
+            <h2 class="modal-title">Delete Account?</h2>
+            <p class="modal-text">
+                This will <strong>permanently delete</strong> your account,
+                profile, and all your data. This action <strong>cannot be undone</strong>.
+            </p>
+
+            <label class="confirm-check">
+                <input type="checkbox" id="confirmDelete">
+                <span>I understand this action cannot be undone</span>
+            </label>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-danger" id="deleteConfirmBtn" onclick="confirmDelete()" disabled>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ---------- MENU ---------- */
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownMenu.contains(e.target) && e.target !== menuBtn) {
+                dropdownMenu.classList.remove('open');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                dropdownMenu.classList.remove('open');
+                closeLogoutModal();
+                closeSettingsModal();
+                closeDeleteModal();
+            }
+        });
+
+        /* ---------- LOGOUT ---------- */
+        function openLogoutModal() {
+            dropdownMenu.classList.remove('open');
+            document.getElementById('logoutModal').classList.add('open');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('open');
+        }
+        function confirmLogout() {
+            window.location.href = '/logout';
+        }
+
+        /* ---------- SETTINGS ---------- */
+        function openSettingsModal() {
+            dropdownMenu.classList.remove('open');
+            document.getElementById('settingsModal').classList.add('open');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('open');
+        }
+
+        /* ---------- DELETE ACCOUNT ---------- */
+        function openDeleteModal() {
+            closeSettingsModal();
+            document.getElementById('deleteModal').classList.add('open');
+            document.getElementById('confirmDelete').checked = false;
+            document.getElementById('deleteConfirmBtn').disabled = true;
+        }
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('open');
+        }
+        document.getElementById('confirmDelete').addEventListener('change', function () {
+            document.getElementById('deleteConfirmBtn').disabled = !this.checked;
+        });
+        function confirmDelete() {
+            window.location.href = '/delete_account';
+        }
+
+        /* ---------- CLICK OUTSIDE MODAL ---------- */
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('open');
+                }
+            });
+        });
+
+        /* ---------- PROMPT BOX ---------- */
+        function nextPrompt() {
+            const p1 = document.getElementById('prompt1');
+            const p2 = document.getElementById('prompt2');
+            if (p1) p1.classList.remove('active');
+            if (p2) p2.classList.add('active');
+        }
+
+        function closePrompt() {
+            const box = document.getElementById('promptBox');
+            if (box) box.style.display = 'none';
+        }
+
+        function goToSetup() {
+            window.location.href = '/profile_setup';
+        }
+    </script>
+
+</body>
+</html>

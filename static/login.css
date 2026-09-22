@@ -1,0 +1,177 @@
+/* ============================================
+   Login Page — UI v2
+   Author: [Your Name]
+   Style: Modern Soft (green accent)
+   ============================================ */
+
+/* ---------- Google Font: Poppins ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ---------- Reset ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---------- Base ---------- */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    color: #1f2937;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ---------- Wrapper (centers the card) ---------- */
+.auth-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---------- Card ---------- */
+.auth-box {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 36px;
+    border-radius: 16px;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.04);
+    animation: fadeIn 0.4s ease;
+}
+
+/* ---------- Heading ---------- */
+.auth-box h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+    margin-bottom: 28px;
+    letter-spacing: -0.3px;
+}
+
+/* ---------- Input Groups ---------- */
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #1f2937;
+    background-color: #f3f4f6;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-group input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.input-group input:hover {
+    background-color: #eef0f3;
+}
+
+.input-group input:focus {
+    background-color: #ffffff;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+/* ---------- Primary Button ---------- */
+.btn-primary {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #22c55e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.25);
+}
+
+/* ---------- Bottom Links ---------- */
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #f0f2f5;
+}
+
+.auth-links a {
+    font-size: 13.5px;
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.auth-links a:hover {
+    color: #22c55e;
+}
+
+/* Second link — highlight "Create new account" */
+.auth-links a:last-child {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.auth-links a:last-child:hover {
+    color: #16a34a;
+    text-decoration: underline;
+}
+
+/* ---------- Animation ---------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- Responsive (small phones) ---------- */
+@media (max-width: 420px) {
+    .auth-box {
+        padding: 32px 24px;
+        border-radius: 14px;
+    }
+
+    .auth-box h2 {
+        font-size: 23px;
+    }
+}

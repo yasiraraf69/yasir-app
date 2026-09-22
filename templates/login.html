@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../static/login.css">
+    <link rel="stylesheet" href="../static/toast.css">
 </head>
 <body>
 
@@ -30,6 +31,26 @@
             </div>
         </div>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="toast-container">
+            {% for category, message in messages %}
+                <div class="toast toast-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.toast').forEach(t => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(100%)';
+                setTimeout(() => t.remove(), 300);
+            });
+        }, 3000);
+    </script>
 
 </body>
 </html>

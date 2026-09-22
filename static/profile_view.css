@@ -1,6 +1,6 @@
 /* ============================================
    Profile View — Complete Styles
-   (Profile card + Topbar + Menu + Modals + Prompt)
+   (Topbar + Menu + Profile Card + Prompts + Modals + Toast)
    ============================================ */
 
    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -44,7 +44,7 @@
        letter-spacing: -0.2px;
    }
    
-   /* ---------- Hamburger Button ---------- */
+   /* Hamburger Button */
    .menu-btn {
        width: 42px;
        height: 42px;
@@ -73,7 +73,7 @@
        transition: all 0.2s ease;
    }
    
-   /* ---------- Dropdown Menu ---------- */
+   /* Dropdown Menu */
    .dropdown-menu {
        position: absolute;
        top: 70px;
@@ -125,7 +125,7 @@
    }
    
    /* ============================================
-      2. PROFILE CARD (centered)
+      2. PROFILE CARD
       ============================================ */
    .profile-wrapper {
        display: flex;
@@ -149,7 +149,7 @@
        animation: fadeIn 0.4s ease;
    }
    
-   /* ---------- Profile Picture Circle ---------- */
+   /* Profile Picture Circle */
    .profile-pic {
        width: 140px;
        height: 140px;
@@ -183,7 +183,6 @@
        display: block;
    }
    
-   /* ---------- Name ---------- */
    .profile-name {
        font-size: 24px;
        font-weight: 600;
@@ -192,7 +191,6 @@
        letter-spacing: -0.3px;
    }
    
-   /* ---------- Bio ---------- */
    .profile-bio {
        font-size: 14px;
        color: #6b7280;
@@ -201,7 +199,7 @@
    }
    
    /* ============================================
-      3. FLOATING PROMPT BOX (bottom-right)
+      3. FLOATING PROMPT BOX
       ============================================ */
    .prompt-box {
        position: fixed;
@@ -336,7 +334,7 @@
        line-height: 1.5;
    }
    
-   /* ---------- Modal Buttons ---------- */
+   /* Modal Buttons */
    .modal-actions {
        display: flex;
        gap: 10px;
@@ -384,7 +382,7 @@
    }
    
    /* ============================================
-      5. SETTINGS OPTION
+      5. SETTINGS MODAL
       ============================================ */
    .settings-options {
        margin-bottom: 18px;

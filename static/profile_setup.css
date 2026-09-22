@@ -1,5 +1,5 @@
 /* ============================================
-   Profile Setup — Multi-Step UI
+   Profile Setup — Multi-Step
    ============================================ */
 
    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -21,7 +21,6 @@
        padding: 20px;
    }
    
-   /* ---------- Wrapper ---------- */
    .setup-wrapper {
        width: 100%;
        display: flex;
@@ -29,20 +28,19 @@
        justify-content: center;
    }
    
-   /* ---------- Card ---------- */
    .setup-box {
        background: #ffffff;
        width: 100%;
        max-width: 440px;
        padding: 36px 32px;
        border-radius: 16px;
-       box-shadow: 
+       box-shadow:
            0 10px 30px rgba(0, 0, 0, 0.08),
            0 2px 8px rgba(0, 0, 0, 0.04);
        animation: fadeIn 0.4s ease;
    }
    
-   /* ---------- Progress Bar ---------- */
+   /* Progress bar */
    .progress-bar {
        width: 100%;
        height: 6px;
@@ -68,7 +66,7 @@
        letter-spacing: 0.3px;
    }
    
-   /* ---------- Steps (hide all except active) ---------- */
+   /* Steps */
    .step {
        display: none;
    }
@@ -93,7 +91,7 @@
        line-height: 1.5;
    }
    
-   /* ---------- Inputs ---------- */
+   /* Inputs */
    .input-group {
        margin-bottom: 24px;
    }
@@ -131,14 +129,13 @@
        color: #9ca3af;
    }
    
-   /* File input special */
    .input-group input[type="file"] {
        padding: 12px;
        cursor: pointer;
        font-size: 13px;
    }
    
-   /* ---------- Buttons ---------- */
+   /* Buttons */
    .btn-row {
        display: flex;
        gap: 10px;
@@ -184,7 +181,35 @@
        width: 100%;
    }
    
-   /* ---------- Animation ---------- */
+   /* Required tag */
+   .required-tag {
+       display: inline-block;
+       font-size: 11px;
+       font-weight: 600;
+       color: #dc2626;
+       background-color: #fef2f2;
+       padding: 2px 8px;
+       border-radius: 6px;
+       margin-left: 6px;
+       vertical-align: middle;
+   }
+   
+   /* Error message */
+   .error-msg {
+       display: none;
+       font-size: 13px;
+       color: #dc2626;
+       margin-top: -14px;
+       margin-bottom: 16px;
+       font-weight: 500;
+       line-height: 1.4;
+   }
+   
+   .error-msg strong {
+       font-weight: 700;
+       color: #b91c1c;
+   }
+   
    @keyframes fadeIn {
        from { opacity: 0; transform: translateY(10px); }
        to   { opacity: 1; transform: translateY(0); }
@@ -195,36 +220,7 @@
        to   { opacity: 1; transform: translateX(0); }
    }
    
-   /* ---------- Responsive ---------- */
    @media (max-width: 480px) {
-       .setup-box {
-           padding: 28px 22px;
-       }
-       .step h2 {
-           font-size: 19px;
-       }
+       .setup-box { padding: 28px 22px; }
+       .step h2 { font-size: 19px; }
    }
-
-/* ---------- Required Tag (small badge) ---------- */
-.required-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #dc2626;
-    background-color: #fef2f2;
-    padding: 2px 8px;
-    border-radius: 6px;
-    margin-left: 6px;
-    vertical-align: middle;
-    letter-spacing: 0.3px;
-}
-
-/* ---------- Error Message ---------- */
-.error-msg {
-    display: none;   /* hidden by default */
-    font-size: 13px;
-    color: #dc2626;
-    margin-top: -16px;
-    margin-bottom: 16px;
-    font-weight: 500;
-}

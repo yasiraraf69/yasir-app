@@ -1,5 +1,5 @@
 /* ============================================
-   Welcome Page — UI v2.1 (fixed navbar)
+   Welcome Page
    ============================================ */
 
    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -22,22 +22,18 @@
    /* ---------- Navbar ---------- */
    .navbar {
        display: flex;
-       justify-content: space-between;   /* logo LEFT, links RIGHT */
+       justify-content: space-between;
        align-items: center;
        padding: 20px 40px;
-       background-color: transparent;
    }
    
-   /* ---------- Logo (left side) ---------- */
    .nav-logo {
        font-size: 20px;
        font-weight: 700;
        color: #22c55e;
        letter-spacing: -0.3px;
-       cursor: default;
    }
    
-   /* ---------- Nav Links (right side) ---------- */
    .nav-links {
        display: flex;
        align-items: center;
@@ -45,12 +41,11 @@
    }
    
    .nav-links a {
-       /* Fixed size — both buttons identical */
        display: inline-flex;
        align-items: center;
        justify-content: center;
-       min-width: 90px;              /* same width */
-       height: 40px;                 /* same height */
+       min-width: 90px;
+       height: 40px;
        padding: 0 20px;
        font-family: 'Poppins', sans-serif;
        font-size: 14px;
@@ -100,7 +95,6 @@
        animation: fadeIn 0.7s ease;
    }
    
-   /* ---------- Animation ---------- */
    @keyframes fadeIn {
        from { opacity: 0; transform: translateY(12px); }
        to   { opacity: 1; transform: translateY(0); }
@@ -108,26 +102,14 @@
    
    /* ---------- Responsive ---------- */
    @media (max-width: 640px) {
-       .navbar {
-           padding: 16px 20px;
-       }
-   
-       .nav-logo {
-           font-size: 17px;
-       }
-   
+       .navbar { padding: 16px 20px; }
+       .nav-logo { font-size: 17px; }
        .nav-links a {
            min-width: 75px;
            height: 36px;
            padding: 0 14px;
            font-size: 13px;
        }
-   
-       .welcome-container h1 {
-           font-size: 36px;
-       }
-   
-       .welcome-container p {
-           font-size: 14.5px;
-       }
+       .welcome-container h1 { font-size: 36px; }
+       .welcome-container p { font-size: 14.5px; }
    }

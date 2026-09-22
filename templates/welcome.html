@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
     <link rel="stylesheet" href="../static/welcome.css">
+    <link rel="stylesheet" href="../static/toast.css">
 </head>
 <body>
 
@@ -20,6 +21,27 @@
         <h1>Welcome to my Website</h1>
         <p>This is a simple project built with Flask and SQLite.</p>
     </div>
+
+    <!-- Toast Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="toast-container">
+            {% for category, message in messages %}
+                <div class="toast toast-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.toast').forEach(t => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(100%)';
+                setTimeout(() => t.remove(), 300);
+            });
+        }, 3000);
+    </script>
 
 </body>
 </html>

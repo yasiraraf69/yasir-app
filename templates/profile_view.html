@@ -96,23 +96,32 @@
         </div>
     </div>
 
-    <!-- MODAL: DELETE -->
+    <!-- MODAL: DELETE (now uses POST with password) -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-card">
-            <div class="modal-icon">⚠️</div>
-            <h2 class="modal-title">Delete Account?</h2>
-            <p class="modal-text">
-                This will <strong>permanently delete</strong> your account,
-                profile, and all data. <strong>Cannot be undone.</strong>
-            </p>
-            <label class="confirm-check">
-                <input type="checkbox" id="confirmDelete">
-                <span>I understand this action cannot be undone</span>
-            </label>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn-danger" id="deleteConfirmBtn" onclick="confirmDelete()" disabled>Delete</button>
-            </div>
+            <form method="POST" action="/delete_account" id="deleteForm">
+                <div class="modal-icon">⚠️</div>
+                <h2 class="modal-title">Delete Account?</h2>
+                <p class="modal-text">
+                    This will <strong>permanently delete</strong> your account,
+                    profile, and all data. <strong>Cannot be undone.</strong>
+                </p>
+
+                <input type="password" name="password" id="deletePassword"
+                       placeholder="Enter your password to confirm" required
+                       style="width:100%;padding:12px 14px;font-family:'Poppins',sans-serif;
+                              font-size:14px;background:#f3f4f6;border:1.5px solid transparent;
+                              border-radius:10px;outline:none;margin-bottom:14px;">
+
+                <label class="confirm-check">
+                    <input type="checkbox" id="confirmDelete">
+                    <span>I understand this action cannot be undone</span>
+                </label>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="submit" class="btn-danger" id="deleteConfirmBtn" disabled>Delete</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -174,16 +183,15 @@
             document.getElementById('deleteModal').classList.add('open');
             document.getElementById('confirmDelete').checked = false;
             document.getElementById('deleteConfirmBtn').disabled = true;
+            document.getElementById('deletePassword').value = '';
         }
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.remove('open');
         }
+
         document.getElementById('confirmDelete').addEventListener('change', function () {
             document.getElementById('deleteConfirmBtn').disabled = !this.checked;
         });
-        function confirmDelete() {
-            window.location.href = '/delete_account';
-        }
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {

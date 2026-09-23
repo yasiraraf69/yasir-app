@@ -1,38 +1,53 @@
 # ============================================================
-# MY-FIRST-PROJECT - Flask Application
-# v1.5 — Strong logic, all paths covered, no loops
+# yasir-app - Flask Application
+# v1.8 - Security update
 # ============================================================
-# Route flow:
-#   Visitor → / → [Login] [Signup]
-#   Signup → /login
-#   Login → check profile → /profile_setup OR /profile
-#   Logout → / (cookie cleared)
-#   Delete → / (cookie cleared)
+# Changes from v1.5:
+#   - Password hashing (was: plain text)
+#   - Secret key from environment (was: hardcoded fallback)
+#   - Debug mode from environment (was: always on)
+#   - Delete account via POST (was: GET)
+#   - Strong image validation (was: extension only)
 # ============================================================
 
 import os
+import uuid
 import sqlite3
 from datetime import timedelta
 from functools import wraps
+from dotenv import load_dotenv
 from flask import (
     Flask, render_template, request, redirect,
     url_for, session, flash, make_response
 )
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+# ============================================================
+# LOAD ENVIRONMENT VARIABLES
+# ============================================================
+load_dotenv()
 
 
 # ============================================================
 # APP CONFIG
 # ============================================================
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'my_super_secret_key_change_later')
+
+# Secret key - MUST come from environment. No fallback.
+app.secret_key = os.environ.get('SECRET_KEY')
+if not app.secret_key:
+    raise ValueError(
+        "SECRET_KEY not set. Create a .env file with SECRET_KEY=your_key"
+    )
+
 app.permanent_session_lifetime = timedelta(days=7)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -40,14 +55,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # DATABASE HELPERS
 # ============================================================
 def get_db_connection():
-    """Open SQLite connection with timeout (prevents 'database is locked')."""
     conn = sqlite3.connect('database.db', timeout=10)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db():
-    """Create tables if they don't exist."""
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -73,22 +86,61 @@ def init_db():
     conn.close()
 
 
-def allowed_file(filename):
-    """Check file extension is allowed."""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# ============================================================
+# IMAGE VALIDATION
+# ============================================================
+def is_valid_image(file_stream):
+    """
+    Check file signature (magic bytes) to confirm it's a real image.
+    Returns True only for PNG, JPEG, or GIF.
+    """
+    header = file_stream.read(12)
+    file_stream.seek(0)
+
+    # PNG: 89 50 4E 47 0D 0A 1A 0A
+    if header[:8] == b'\x89PNG\r\n\x1a\n':
+        return True
+    # JPEG: FF D8 FF
+    if header[:3] == b'\xff\xd8\xff':
+        return True
+    # GIF: GIF87a or GIF89a
+    if header[:6] in (b'GIF87a', b'GIF89a'):
+        return True
+    return False
+
+
+def save_profile_pic(file):
+    """
+    Validate, rename uniquely, and save the uploaded image.
+    Returns the new filename, or None if invalid.
+    """
+    if not file or file.filename == '':
+        return None
+
+    if not is_valid_image(file):
+        return None
+
+    # Get extension from original filename (safe, no path)
+    ext = file.filename.rsplit('.', 1)[-1].lower()
+    if ext not in {'png', 'jpg', 'jpeg', 'gif'}:
+        return None
+
+    # Unique filename - prevents overwriting
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+    file.save(save_path)
+
+    return unique_name
 
 
 # ============================================================
-# STATE HELPERS — single source of truth
+# STATE HELPERS
 # ============================================================
 def is_logged_in():
-    """Is there a session with a user_id?"""
     return 'user_id' in session
 
 
 def user_exists(user_id):
-    """Does this user still exist in the DB? (ghost session check)"""
     conn = get_db_connection()
     try:
         result = conn.execute(
@@ -100,7 +152,6 @@ def user_exists(user_id):
 
 
 def has_profile(user_id):
-    """Has this user completed profile setup?"""
     conn = get_db_connection()
     try:
         result = conn.execute(
@@ -112,21 +163,12 @@ def has_profile(user_id):
 
 
 def where_should_logged_in_user_go():
-    """
-    Central function: where should a logged-in user go?
-    - No profile → /profile_setup
-    - Has profile → /profile
-    """
     if has_profile(session['user_id']):
         return url_for('profile_view')
     return url_for('profile_setup')
 
 
 def clear_session_and_redirect(target='welcome'):
-    """
-    Fully clear session + delete cookie.
-    Used by logout + delete account.
-    """
     session.clear()
     response = make_response(redirect(url_for(target)))
     response.delete_cookie('session')
@@ -134,44 +176,29 @@ def clear_session_and_redirect(target='welcome'):
 
 
 # ============================================================
-# DECORATORS — reusable access control
+# DECORATORS
 # ============================================================
-
 def login_required(f):
-    """
-    Route only accessible if logged in.
-    Also handles ghost session (user deleted but cookie remains).
-    """
     @wraps(f)
     def decorated(*args, **kwargs):
-        # 1. Not logged in at all → go login
         if not is_logged_in():
             flash('Please log in first.', 'error')
             return redirect(url_for('login'))
-
-        # 2. Ghost session → user missing from DB
         if not user_exists(session['user_id']):
             session.clear()
             flash('Session expired. Please log in again.', 'error')
             return redirect(url_for('login'))
-
         return f(*args, **kwargs)
     return decorated
 
 
 def guest_only(f):
-    """
-    Route only accessible if NOT logged in.
-    If logged in → redirect to profile or profile_setup.
-    """
     @wraps(f)
     def decorated(*args, **kwargs):
         if is_logged_in():
-            # Ghost session check
             if not user_exists(session['user_id']):
                 session.clear()
                 return f(*args, **kwargs)
-            # Real logged-in user → go where they belong
             return redirect(where_should_logged_in_user_go())
         return f(*args, **kwargs)
     return decorated
@@ -181,37 +208,25 @@ def guest_only(f):
 # ROUTES
 # ============================================================
 
-# ---------------- WELCOME ----------------
 @app.route('/')
 def welcome():
-    """
-    Welcome page — ONLY for visitors.
-    Logged-in users auto-redirect to profile/profile_setup.
-    """
     if is_logged_in():
-        # Ghost session → clear and show welcome
         if not user_exists(session['user_id']):
             session.clear()
             return render_template('welcome.html')
-        # Real user → redirect
         return redirect(where_should_logged_in_user_go())
-
-    # Visitor → show welcome
     return render_template('welcome.html')
 
 
-# ---------------- SIGNUP ----------------
 @app.route('/signup', methods=['GET', 'POST'])
 @guest_only
 def signup():
-    """Only for visitors."""
     if request.method == 'POST':
         email_phone = request.form.get('email_phone')
         password = request.form.get('password')
         re_password = request.form.get('re_password')
         terms_agree = request.form.get('terms_agree')
 
-        # Validation
         if not email_phone or not password:
             flash('Email and password are required.', 'error')
             return redirect(url_for('signup'))
@@ -224,12 +239,14 @@ def signup():
             flash('You must agree to the Terms and Conditions.', 'error')
             return redirect(url_for('signup'))
 
-        # Save user
+        # Hash the password before saving
+        hashed = generate_password_hash(password)
+
         conn = get_db_connection()
         try:
             conn.execute(
                 'INSERT INTO users (email_phone, password) VALUES (?, ?)',
-                (email_phone, password)
+                (email_phone, hashed)
             )
             conn.commit()
             flash('Account created! Please log in.', 'success')
@@ -243,11 +260,9 @@ def signup():
     return render_template('signup.html')
 
 
-# ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 @guest_only
 def login():
-    """Only for visitors."""
     if request.method == 'POST':
         email_phone = request.form.get('email_phone')
         password = request.form.get('password')
@@ -255,19 +270,17 @@ def login():
         conn = get_db_connection()
         try:
             user = conn.execute(
-                'SELECT * FROM users WHERE email_phone = ? AND password = ?',
-                (email_phone, password)
+                'SELECT * FROM users WHERE email_phone = ?',
+                (email_phone,)
             ).fetchone()
         finally:
             conn.close()
 
-        if user:
-            # Set session
+        # Check hashed password
+        if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session.permanent = True
             flash('Welcome back!', 'success')
-
-            # Route to setup OR profile
             return redirect(where_should_logged_in_user_go())
         else:
             flash('Invalid email/phone or password.', 'error')
@@ -276,20 +289,16 @@ def login():
     return render_template('login.html')
 
 
-# ---------------- LOGOUT ----------------
 @app.route('/logout')
 def logout():
-    """Clear session + cookie → welcome."""
     response = clear_session_and_redirect('welcome')
     flash('You have been logged out.', 'success')
     return response
 
 
-# ---------------- FORGOT PASSWORD ----------------
 @app.route('/forgot_password', methods=['GET', 'POST'])
 @guest_only
 def forgot_password():
-    """Only for visitors."""
     if request.method == 'POST':
         email_phone = request.form.get('email_phone')
         new_password = request.form.get('new_password')
@@ -305,9 +314,10 @@ def forgot_password():
             ).fetchone()
 
             if user:
+                hashed = generate_password_hash(new_password)
                 conn.execute(
                     'UPDATE users SET password = ? WHERE email_phone = ?',
-                    (new_password, email_phone)
+                    (hashed, email_phone)
                 )
                 conn.commit()
                 flash('Password reset! Please log in.', 'success')
@@ -321,12 +331,9 @@ def forgot_password():
     return render_template('forgot_password.html')
 
 
-# ---------------- PROFILE SETUP ----------------
 @app.route('/profile_setup', methods=['GET', 'POST'])
 @login_required
 def profile_setup():
-    """Logged-in only."""
-    # Get existing profile (for edit mode)
     conn = get_db_connection()
     try:
         existing = conn.execute(
@@ -341,24 +348,21 @@ def profile_setup():
         bio = request.form.get('bio')
         file = request.files.get('profile_pic')
 
-        # Name required
         if not name or name.strip() == '':
             flash('Name is required.', 'error')
             return redirect(url_for('profile_setup'))
 
-        # Handle image upload
+        # Validate + save image
         filename = None
         if file and file.filename != '':
-            if not allowed_file(file.filename):
-                flash('Only PNG, JPG, JPEG, GIF allowed.', 'error')
+            filename = save_profile_pic(file)
+            if filename is None:
+                flash('Only valid PNG, JPG, or GIF images allowed.', 'error')
                 return redirect(url_for('profile_setup'))
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         conn = get_db_connection()
         try:
             if existing:
-                # UPDATE — keep old values if new not provided
                 conn.execute(
                     '''UPDATE profiles
                        SET name = ?,
@@ -382,11 +386,9 @@ def profile_setup():
     return render_template('profile_setup.html', profile=existing)
 
 
-# ---------------- PROFILE VIEW ----------------
 @app.route('/profile')
 @login_required
 def profile_view():
-    """Logged-in only. Requires profile."""
     if not has_profile(session['user_id']):
         flash('Please set up your profile first.', 'error')
         return redirect(url_for('profile_setup'))
@@ -403,20 +405,32 @@ def profile_view():
     return render_template('profile_view.html', profile=profile)
 
 
-# ---------------- DELETE ACCOUNT ----------------
-@app.route('/delete_account')
+@app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    """Logged-in only. Deletes everything."""
     user_id = session['user_id']
+    password = request.form.get('password')
+
+    if not password:
+        flash('Password is required to delete account.', 'error')
+        return redirect(url_for('profile_view'))
 
     conn = get_db_connection()
     try:
+        user = conn.execute(
+            'SELECT * FROM users WHERE id = ?', (user_id,)
+        ).fetchone()
+
+        # Verify password before deleting
+        if not user or not check_password_hash(user['password'], password):
+            flash('Incorrect password. Account not deleted.', 'error')
+            return redirect(url_for('profile_view'))
+
+        # Delete profile pic from disk
         profile = conn.execute(
             'SELECT * FROM profiles WHERE user_id = ?', (user_id,)
         ).fetchone()
 
-        # Delete uploaded image from disk
         if profile and profile['profile_pic']:
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], profile['profile_pic'])
             if os.path.exists(image_path):
@@ -429,7 +443,6 @@ def delete_account():
     finally:
         conn.close()
 
-    # Clear session + cookie
     response = clear_session_and_redirect('welcome')
     flash('Your account has been deleted.', 'success')
     return response
@@ -450,5 +463,5 @@ def too_large(e):
 init_db()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3002)
-
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=debug_mode, port=3002)

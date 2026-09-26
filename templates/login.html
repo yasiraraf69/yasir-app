@@ -46,7 +46,7 @@
         setTimeout(() => {
             document.querySelectorAll('.toast').forEach(t => {
                 t.style.opacity = '0';
-                t.style.transform = 'translateX(100%)';
+                t.style.transform = 'translateX(-100%)';
                 setTimeout(() => t.remove(), 300);
             });
         }, 3000);

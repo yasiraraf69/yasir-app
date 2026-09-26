@@ -16,10 +16,26 @@
         </button>
         <div class="dropdown-menu" id="dropdownMenu">
             <a href="#" class="menu-item" onclick="openSettingsModal(); return false;">
-                <span class="menu-icon">⚙️</span> Settings
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                Settings
             </a>
             <a href="#" class="menu-item" onclick="openLogoutModal(); return false;">
-                <span class="menu-icon">🚪</span> Logout
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
             </a>
         </div>
     </div>
@@ -42,35 +58,37 @@
     <div class="prompt-box" id="promptBox">
         {% if not profile['profile_pic'] %}
         <div class="prompt-content active" id="prompt1">
-            <h3>Add your profile pic</h3>
-            <p class="prompt-desc">Complete your profile</p>
+            <h3>Add a profile photo</h3>
+            <p class="prompt-desc">Optional</p>
             <div class="btn-row">
                 <button class="btn-secondary" onclick="nextPrompt()">Skip</button>
-                <button class="btn-primary" onclick="goToSetup()">Add Now</button>
+                <button class="btn-primary" onclick="goToSetup()">Add</button>
             </div>
         </div>
         {% endif %}
         {% if not profile['bio'] %}
         <div class="prompt-content {% if profile['profile_pic'] %}active{% endif %}" id="prompt2">
-            <h3>Add your bio</h3>
-            <p class="prompt-desc">Tell people about yourself</p>
+            <h3>Add a bio</h3>
+            <p class="prompt-desc">Optional</p>
             <div class="btn-row">
                 <button class="btn-secondary" onclick="closePrompt()">Skip</button>
-                <button class="btn-primary" onclick="goToSetup()">Add Now</button>
+                <button class="btn-primary" onclick="goToSetup()">Add</button>
             </div>
         </div>
         {% endif %}
     </div>
     {% endif %}
 
-    <!-- MODAL: SETTINGS -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-card">
             <h2 class="modal-title">Settings</h2>
-            <p class="modal-text">Manage your account</p>
             <div class="settings-options">
                 <button class="settings-option danger" onclick="openDeleteModal()">
-                    <span class="option-icon">⚠️</span>
+                    <svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
                     <div class="option-text">
                         <strong>Delete Account</strong>
                         <small>This will remove all your data</small>
@@ -83,10 +101,15 @@
         </div>
     </div>
 
-    <!-- MODAL: LOGOUT -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-card">
-            <div class="modal-icon">🚪</div>
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </div>
             <h2 class="modal-title">Log out?</h2>
             <p class="modal-text">Are you sure you want to log out?</p>
             <div class="modal-actions">
@@ -96,15 +119,20 @@
         </div>
     </div>
 
-    <!-- MODAL: DELETE (now uses POST with password) -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-card">
             <form method="POST" action="/delete_account" id="deleteForm">
-                <div class="modal-icon">⚠️</div>
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
                 <h2 class="modal-title">Delete Account?</h2>
                 <p class="modal-text">
-                    This will <strong>permanently delete</strong> your account,
-                    profile, and all data. <strong>Cannot be undone.</strong>
+                    This will permanently delete your account and all data.
+                    This cannot be undone.
                 </p>
 
                 <input type="password" name="password" id="deletePassword"
@@ -216,7 +244,7 @@
         setTimeout(() => {
             document.querySelectorAll('.toast').forEach(t => {
                 t.style.opacity = '0';
-                t.style.transform = 'translateX(100%)';
+                t.style.transform = 'translateX(-100%)';
                 setTimeout(() => t.remove(), 300);
             });
         }, 3000);

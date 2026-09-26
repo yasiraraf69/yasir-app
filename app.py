@@ -1,13 +1,15 @@
 # ============================================================
 # yasir-app - Flask Application
-# v1.8 - Security update
+# v1.9 - Final cleanup
 # ============================================================
-# Changes from v1.5:
-#   - Password hashing (was: plain text)
-#   - Secret key from environment (was: hardcoded fallback)
-#   - Debug mode from environment (was: always on)
-#   - Delete account via POST (was: GET)
-#   - Strong image validation (was: extension only)
+# Changes from v1.8:
+#   - SVG icons (was: emoji)
+#   - Copy polish
+#   - .env.example added for easier onboarding
+#   - Image size limit increased to 10 MB
+#   - Bio length limit (300 chars)
+#   - Name length limit (30 chars)
+#   - Password length limit (4-18 chars)
 # ============================================================
 
 import os
@@ -35,18 +37,17 @@ load_dotenv()
 # ============================================================
 app = Flask(__name__)
 
-# Secret key - MUST come from environment. No fallback.
 app.secret_key = os.environ.get('SECRET_KEY')
 if not app.secret_key:
     raise ValueError(
-        "SECRET_KEY not set. Create a .env file with SECRET_KEY=your_key"
+        "SECRET_KEY not set. Copy .env.example to .env and set a value."
     )
 
 app.permanent_session_lifetime = timedelta(days=7)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -90,42 +91,29 @@ def init_db():
 # IMAGE VALIDATION
 # ============================================================
 def is_valid_image(file_stream):
-    """
-    Check file signature (magic bytes) to confirm it's a real image.
-    Returns True only for PNG, JPEG, or GIF.
-    """
     header = file_stream.read(12)
     file_stream.seek(0)
 
-    # PNG: 89 50 4E 47 0D 0A 1A 0A
     if header[:8] == b'\x89PNG\r\n\x1a\n':
         return True
-    # JPEG: FF D8 FF
     if header[:3] == b'\xff\xd8\xff':
         return True
-    # GIF: GIF87a or GIF89a
     if header[:6] in (b'GIF87a', b'GIF89a'):
         return True
     return False
 
 
 def save_profile_pic(file):
-    """
-    Validate, rename uniquely, and save the uploaded image.
-    Returns the new filename, or None if invalid.
-    """
     if not file or file.filename == '':
         return None
 
     if not is_valid_image(file):
         return None
 
-    # Get extension from original filename (safe, no path)
     ext = file.filename.rsplit('.', 1)[-1].lower()
     if ext not in {'png', 'jpg', 'jpeg', 'gif'}:
         return None
 
-    # Unique filename - prevents overwriting
     unique_name = f"{uuid.uuid4().hex}.{ext}"
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
     file.save(save_path)
@@ -235,11 +223,18 @@ def signup():
             flash('Passwords do not match!', 'error')
             return redirect(url_for('signup'))
 
+        if len(password) < 4:
+            flash('Password must be at least 4 characters.', 'error')
+            return redirect(url_for('signup'))
+
+        if len(password) > 18:
+            flash('Password must be 18 characters or less.', 'error')
+            return redirect(url_for('signup'))
+
         if not terms_agree:
             flash('You must agree to the Terms and Conditions.', 'error')
             return redirect(url_for('signup'))
 
-        # Hash the password before saving
         hashed = generate_password_hash(password)
 
         conn = get_db_connection()
@@ -249,7 +244,7 @@ def signup():
                 (email_phone, hashed)
             )
             conn.commit()
-            flash('Account created! Please log in.', 'success')
+            flash('Account created.', 'success')
             return redirect(url_for('login'))
         except sqlite3.IntegrityError:
             flash('Email or phone already registered.', 'error')
@@ -276,7 +271,6 @@ def login():
         finally:
             conn.close()
 
-        # Check hashed password
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session.permanent = True
@@ -305,6 +299,14 @@ def forgot_password():
 
         if not email_phone or not new_password:
             flash('Please fill both fields.', 'error')
+            return redirect(url_for('forgot_password'))
+
+        if len(new_password) < 4:
+            flash('Password must be at least 4 characters.', 'error')
+            return redirect(url_for('forgot_password'))
+
+        if len(new_password) > 18:
+            flash('Password must be 18 characters or less.', 'error')
             return redirect(url_for('forgot_password'))
 
         conn = get_db_connection()
@@ -352,7 +354,14 @@ def profile_setup():
             flash('Name is required.', 'error')
             return redirect(url_for('profile_setup'))
 
-        # Validate + save image
+        if len(name) > 30:
+            flash('Name must be 30 characters or less.', 'error')
+            return redirect(url_for('profile_setup'))
+
+        if bio and len(bio) > 300:
+            flash('Bio must be 300 characters or less.', 'error')
+            return redirect(url_for('profile_setup'))
+
         filename = None
         if file and file.filename != '':
             filename = save_profile_pic(file)
@@ -421,12 +430,10 @@ def delete_account():
             'SELECT * FROM users WHERE id = ?', (user_id,)
         ).fetchone()
 
-        # Verify password before deleting
         if not user or not check_password_hash(user['password'], password):
             flash('Incorrect password. Account not deleted.', 'error')
             return redirect(url_for('profile_view'))
 
-        # Delete profile pic from disk
         profile = conn.execute(
             'SELECT * FROM profiles WHERE user_id = ?', (user_id,)
         ).fetchone()
@@ -436,7 +443,6 @@ def delete_account():
             if os.path.exists(image_path):
                 os.remove(image_path)
 
-        # Delete from DB
         conn.execute('DELETE FROM profiles WHERE user_id = ?', (user_id,))
         conn.execute('DELETE FROM users WHERE id = ?', (user_id,))
         conn.commit()
@@ -453,7 +459,7 @@ def delete_account():
 # ============================================================
 @app.errorhandler(413)
 def too_large(e):
-    flash('File is too large. Max size is 5 MB.', 'error')
+    flash('File is too large. Max size is 10 MB.', 'error')
     return redirect(url_for('profile_setup'))
 
 
